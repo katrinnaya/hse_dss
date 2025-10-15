@@ -40,7 +40,7 @@ erDiagram
     SAT_CUSTOMER_SEGMENT_DETAILS {
         string HK_Customer_Segment_ID PK,FK "Ссылка на хаб сегмента клиентов"
         timestamp Load_DTS PK "Дата загрузки (общая для всей загрузки)"
-        string Segment "Сегмент: Consumer/Corporate/HomeOffice"
+        string Segment "Сегмент"
         string City "Город"
         string State "Штат"
         string Postal_Code "Почтовый индекс"
@@ -53,8 +53,8 @@ erDiagram
     SAT_PRODUCT_DETAILS {
         string HK_Product_ID PK,FK "Ссылка на хаб продукта"
         timestamp Load_DTS PK "Дата загрузки (общая для всей загрузки)"
-        string Category "Категория: Furniture/OfficeSupplies/Technology"
-        string Sub_Category "Подкатегория: Chairs/Phones/Binders etc."
+        string Category "Категория"
+        string Sub_Category "Подкатегория"
         string Hash_Diff "Хэш для отслеживания изменений"
         string Record_Source "Источник: Superstore_CSV"
     }
@@ -73,7 +73,7 @@ erDiagram
     SAT_SHIP_MODE_DETAILS {
         string HK_Ship_Mode_ID PK,FK "Ссылка на хаб способа доставки"
         timestamp Load_DTS PK "Дата загрузки (общая для всей загрузки)"
-        string Ship_Mode "Способ доставки: Standard/Second Class etc."
+        string Ship_Mode "Способ доставки"
         string Hash_Diff "Хэш для отслеживания изменений"
         string Record_Source "Источник: Superstore_CSV"
     }
