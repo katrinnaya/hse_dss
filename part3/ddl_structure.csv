@@ -1,0 +1,69 @@
+table_name,column_name,data_type,is_nullable
+gp_stat_archiver,gp_segment_id,integer,YES
+gp_stat_archiver,archived_count,bigint,YES
+gp_stat_archiver,last_archived_wal,text,YES
+gp_stat_archiver,last_archived_time,timestamp with time zone,YES
+gp_stat_archiver,failed_count,bigint,YES
+gp_stat_archiver,last_failed_wal,text,YES
+gp_stat_archiver,last_failed_time,timestamp with time zone,YES
+gp_stat_archiver,stats_reset,timestamp with time zone,YES
+hub_customer_segment,hk_customer_segment_id,character varying,NO
+hub_customer_segment,business_key,character varying,NO
+hub_customer_segment,load_dts,timestamp without time zone,NO
+hub_customer_segment,record_source,character varying,NO
+hub_location,hk_location_id,character varying,NO
+hub_location,business_key,character varying,NO
+hub_location,load_dts,timestamp without time zone,NO
+hub_location,record_source,character varying,NO
+hub_product,hk_product_id,character varying,NO
+hub_product,business_key,character varying,NO
+hub_product,load_dts,timestamp without time zone,NO
+hub_product,record_source,character varying,NO
+hub_ship_mode,hk_ship_mode_id,character varying,NO
+hub_ship_mode,business_key,character varying,NO
+hub_ship_mode,load_dts,timestamp without time zone,NO
+hub_ship_mode,record_source,character varying,NO
+link_sales_transaction,hk_sales_id,character varying,NO
+link_sales_transaction,hk_customer_segment_id,character varying,NO
+link_sales_transaction,hk_product_id,character varying,NO
+link_sales_transaction,hk_location_id,character varying,NO
+link_sales_transaction,hk_ship_mode_id,character varying,NO
+link_sales_transaction,load_dts,timestamp without time zone,NO
+link_sales_transaction,record_source,character varying,NO
+sat_customer_segment_details,hk_customer_segment_id,character varying,YES
+sat_customer_segment_details,load_dts,timestamp without time zone,YES
+sat_customer_segment_details,segment,character varying,YES
+sat_customer_segment_details,city,character varying,YES
+sat_customer_segment_details,state,character varying,YES
+sat_customer_segment_details,postal_code,character varying,YES
+sat_customer_segment_details,region,character varying,YES
+sat_customer_segment_details,country,character varying,YES
+sat_customer_segment_details,hash_diff,character varying,YES
+sat_customer_segment_details,record_source,character varying,YES
+sat_location_details,hk_location_id,character varying,YES
+sat_location_details,load_dts,timestamp without time zone,YES
+sat_location_details,city,character varying,YES
+sat_location_details,state,character varying,YES
+sat_location_details,region,character varying,YES
+sat_location_details,country,character varying,YES
+sat_location_details,hash_diff,character varying,YES
+sat_location_details,record_source,character varying,YES
+sat_product_details,hk_product_id,character varying,YES
+sat_product_details,load_dts,timestamp without time zone,YES
+sat_product_details,category,character varying,YES
+sat_product_details,sub_category,character varying,YES
+sat_product_details,hash_diff,character varying,YES
+sat_product_details,record_source,character varying,YES
+sat_sales_details,hk_sales_id,character varying,YES
+sat_sales_details,load_dts,timestamp without time zone,YES
+sat_sales_details,sales,numeric,YES
+sat_sales_details,quantity,integer,YES
+sat_sales_details,discount,numeric,YES
+sat_sales_details,profit,numeric,YES
+sat_sales_details,hash_diff,character varying,YES
+sat_sales_details,record_source,character varying,YES
+sat_ship_mode_details,hk_ship_mode_id,character varying,YES
+sat_ship_mode_details,load_dts,timestamp without time zone,YES
+sat_ship_mode_details,ship_mode,character varying,YES
+sat_ship_mode_details,hash_diff,character varying,YES
+sat_ship_mode_details,record_source,character varying,YES
