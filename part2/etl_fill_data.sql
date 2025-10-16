@@ -1,7 +1,4 @@
-
--- =============================================
--- Шаг 1: Создаем внешнюю таблицу для чтения CSV
--- =============================================
+-- Шаг 1: Создаем внешнюю таблицу для чтения csv файла (предварительно создан ключ для сервисного аккаунта и прописан в LOCATION)
 
 DROP EXTERNAL TABLE IF EXISTS ext_superstore_data;
 
@@ -20,12 +17,10 @@ CREATE EXTERNAL TABLE ext_superstore_data (
     discount NUMERIC(5,4),    
     profit NUMERIC(12,4)
 ) 
-LOCATION ('pxf://hw-for-dss/SampleSuperstore.csv?PROFILE=s3:text&accesskey=YCAJEBTaYB4dYJNXx8nAcr4ey&secretkey=<secretkey>&endpoint=storage.yandexcloud.net')
+LOCATION ('pxf://hw-for-dss/SampleSuperstore.csv?PROFILE=s3:text&accesskey=YCAJEBTaYB4dYJNXx8nAcr4ey&secretkey=<secretkey>&endpoint=storage.yandexcloud.net') 
 FORMAT 'CSV' (HEADER);
 
--- =============================================
 -- Шаг 2: Заполняем Хабы
--- =============================================
 
 -- HUB_CUSTOMER_SEGMENT
 INSERT INTO hub_customer_segment (
@@ -83,9 +78,7 @@ SELECT DISTINCT
     'Superstore_CSV' as record_source
 FROM ext_superstore_data;
 
--- =============================================
 -- Шаг 3: Заполняем Линк транзакций
--- =============================================
 
 INSERT INTO link_sales_transaction (
     hk_sales_id,
@@ -112,9 +105,7 @@ SELECT
     'Superstore_CSV' as record_source
 FROM ext_superstore_data;
 
--- =============================================
 -- Шаг 4: Заполняем Спутники
--- =============================================
 
 -- SAT_CUSTOMER_SEGMENT_DETAILS
 INSERT INTO sat_customer_segment_details (
@@ -246,8 +237,6 @@ SELECT
     'Superstore_CSV' as record_source
 FROM ext_superstore_data;
 
--- =============================================
--- Шаг 5: Очистка - удаляем внешнюю таблицу
--- =============================================
+-- Шаг 5: Удаляем внешнюю таблицу, что создали в Шаг 1
 
 DROP EXTERNAL TABLE IF EXISTS ext_superstore_data;
