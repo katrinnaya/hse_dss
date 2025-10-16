@@ -1,6 +1,4 @@
--- =============================================
--- ХАБЫ (Hubs) - Бизнес-сущности
--- =============================================
+-- ХАБЫ. Бизнес-сущности
 
 -- 1. Хаб сегментов клиентов
 CREATE TABLE hub_customer_segment (
@@ -58,9 +56,7 @@ COMMENT ON COLUMN hub_ship_mode.business_key IS 'Бизнес-ключ: ShipMode
 COMMENT ON COLUMN hub_ship_mode.load_dts IS 'Дата загрузки записи';
 COMMENT ON COLUMN hub_ship_mode.record_source IS 'Источник данных: файл Superstore';
 
--- =============================================
--- ССЫЛКИ (Links) - Связи между сущностями
--- =============================================
+-- ССЫЛКИ. Связи между сущностями
 
 -- 5. Линк транзакций продаж
 CREATE TABLE link_sales_transaction (
@@ -82,9 +78,7 @@ COMMENT ON COLUMN link_sales_transaction.hk_ship_mode_id IS 'Ссылка на �
 COMMENT ON COLUMN link_sales_transaction.load_dts IS 'Дата загрузки записи';
 COMMENT ON COLUMN link_sales_transaction.record_source IS 'Источник данных: файл Superstore';
 
--- =============================================
--- СПУТНИКИ (Satellites) - Описательные атрибуты
--- =============================================
+-- СПУТНИКИ. Описательные атрибуты
 
 -- 6. Спутник деталей сегментов клиентов
 CREATE TABLE sat_customer_segment_details (
@@ -172,9 +166,7 @@ COMMENT ON COLUMN sat_sales_details.discount IS 'Размер скидки';
 COMMENT ON COLUMN sat_sales_details.profit IS 'Прибыль от продажи';
 COMMENT ON COLUMN sat_sales_details.hash_diff IS 'Хэш всех атрибутов для отслеживания изменений';
 
--- =============================================
--- ВНЕШНИЕ КЛЮЧИ (Foreign Keys)
--- =============================================
+-- ВНЕШНИЕ КЛЮЧИ
 
 ALTER TABLE link_sales_transaction 
 ADD CONSTRAINT fk_link_sales_customer 
@@ -221,9 +213,8 @@ ADD CONSTRAINT fk_sat_sales_link
 FOREIGN KEY (hk_sales_id) 
 REFERENCES link_sales_transaction(hk_sales_id);
 
--- =============================================
--- ИНДЕКСЫ для оптимизации запросов
--- =============================================
+-- ИНДЕКСЫ (оптимизация запросов)
+
 
 CREATE INDEX idx_hub_customer_business_key ON hub_customer_segment(business_key);
 CREATE INDEX idx_hub_product_business_key ON hub_product(business_key);
