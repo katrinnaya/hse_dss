@@ -18,7 +18,7 @@ KSQL_CONFLUENT_SUPPORT_METRICS_ENABLE: "false"
 `SET 'auto.offset.reset' = 'earliest';`
 
 ### Создание потоков
-```
+```sql
 -- Создание потоков
 CREATE STREAM PurchaseStream (id INT KEY, product VARCHAR, left_ts VARCHAR)
   WITH (
@@ -49,7 +49,7 @@ CREATE STREAM PaymentPurchaseStream
   EMIT CHANGES;
 ```
 ### Вставка тестовых данных
-```
+```sql
 INSERT INTO PurchaseStream (id, product, left_ts) VALUES (1, 'kettle', '2022-01-29T06:01:18Z');
 INSERT INTO PurchaseStream (id, product, left_ts) VALUES (2, 'grill', '2022-01-29T17:02:20Z');
 INSERT INTO PurchaseStream (id, product, left_ts) VALUES (3, 'toaster', '2022-01-29T13:44:10Z');
@@ -60,7 +60,9 @@ INSERT INTO PaymentStream (id, purchaseId, status, right_ts) VALUES (103, 3, 'OK
 INSERT INTO PaymentStream (id, purchaseId, status, right_ts) VALUES (104, 4, 'OK', '2022-01-29T12:08:25Z');
 ```
 ### Просмотр результата объединения
-`SELECT * FROM PaymentPurchaseStream EMIT CHANGES LIMIT 3;`
+```sql
+SELECT * FROM PaymentPurchaseStream EMIT CHANGES LIMIT 3;
+```
 ```
 +--------------------+--------------------+--------------------+
 |PURCHASEID          |PRODUCT             |STATUS              |
