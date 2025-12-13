@@ -1,0 +1,225 @@
+erDiagram
+    HUB_CUSTOMER {
+        string hk_customer_id PK "Хэш-ключ клиента"
+        string customer_bk UK "Бизнес-ключ: C_CUSTKEY"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.customer"
+    }
+
+    HUB_ORDER {
+        string hk_order_id PK "Хэш-ключ заказа"
+        string order_bk UK "Бизнес-ключ: O_ORDERKEY"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.orders"
+    }
+
+    HUB_PART {
+        string hk_part_id PK "Хэш-ключ товара"
+        string part_bk UK "Бизнес-ключ: P_PARTKEY"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.part"
+    }
+
+    HUB_SUPPLIER {
+        string hk_supplier_id PK "Хэш-ключ поставщика"
+        string supplier_bk UK "Бизнес-ключ: S_SUPPKEY"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.supplier"
+    }
+
+    HUB_NATION {
+        string hk_nation_id PK "Хэш-ключ страны"
+        string nation_bk UK "Бизнес-ключ: N_NATIONKEY"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.nation"
+    }
+
+    HUB_REGION {
+        string hk_region_id PK "Хэш-ключ региона"
+        string region_bk UK "Бизнес-ключ: R_REGIONKEY"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.region"
+    }
+
+    LINK_ORDER {
+        string hk_order_link_id PK "Хэш-ключ связи заказ–клиент"
+        string hk_order_id FK "Ссылка на заказ"
+        string hk_customer_id FK "Ссылка на клиента"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.orders"
+    }
+
+    LINK_LINEITEM {
+        string hk_lineitem_link_id PK "Хэш-ключ строки заказа"
+        string hk_order_id FK "Ссылка на заказ"
+        string hk_part_id FK "Ссылка на товар"
+        string hk_supplier_id FK "Ссылка на поставщика"
+        integer line_number "Номер строки в заказе"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.lineitem"
+    }
+
+    LINK_PARTSUPP {
+        string hk_partsupp_link_id PK "Хэш-ключ поставки части"
+        string hk_part_id FK "Ссылка на товар"
+        string hk_supplier_id FK "Ссылка на поставщика"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.partsupp"
+    }
+
+    LINK_CUSTOMER_NATION {
+        string hk_customer_nation_link_id PK "Хэш-ключ связи клиент–страна"
+        string hk_customer_id FK "Ссылка на клиента"
+        string hk_nation_id FK "Ссылка на страну"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.customer"
+    }
+
+    LINK_SUPPLIER_NATION {
+        string hk_supplier_nation_link_id PK "Хэш-ключ связи поставщик–страна"
+        string hk_supplier_id FK "Ссылка на поставщика"
+        string hk_nation_id FK "Ссылка на страну"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.supplier"
+    }
+
+    LINK_NATION_REGION {
+        string hk_nation_region_link_id PK "Хэш-ключ связи страна–регион"
+        string hk_nation_id FK "Ссылка на страну"
+        string hk_region_id FK "Ссылка на регион"
+        timestamp load_dts "Дата загрузки"
+        string rec_src "Источник: tpch.tiny.nation"
+    }
+
+    SAT_CUSTOMER_DETAILS {
+        string hk_customer_id PK,FK "Ссылка на клиента"
+        timestamp load_dts PK "Дата загрузки"
+        string customer_name "Имя клиента"
+        string customer_address "Адрес"
+        string customer_phone "Телефон"
+        decimal customer_acctbal "Баланс"
+        string customer_mktsegment "Сегмент"
+        string customer_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.customer"
+    }
+
+    SAT_ORDER_DETAILS {
+        string hk_order_id PK,FK "Ссылка на заказ"
+        timestamp load_dts PK "Дата загрузки"
+        char order_status "Статус заказа"
+        decimal order_totalprice "Общая сумма"
+        date order_date "Дата заказа"
+        string order_priority "Приоритет"
+        string order_clerk "Клерк"
+        integer order_shippriority "Приоритет доставки"
+        string order_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.orders"
+    }
+
+    SAT_LINEITEM_DETAILS {
+        string hk_lineitem_link_id PK,FK "Ссылка на строку заказа"
+        timestamp load_dts PK "Дата загрузки"
+        decimal lineitem_quantity "Количество"
+        decimal lineitem_extendedprice "Полная цена"
+        decimal lineitem_discount "Скидка"
+        decimal lineitem_tax "Налог"
+        char lineitem_returnflag "Флаг возврата"
+        char lineitem_linestatus "Статус строки"
+        date lineitem_shipdate "Дата отгрузки"
+        date lineitem_commitdate "Дата подтверждения"
+        date lineitem_receiptdate "Дата получения"
+        string lineitem_shipinstruct "Инструкции по отгрузке"
+        string lineitem_shipmode "Способ доставки"
+        string lineitem_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.lineitem"
+    }
+
+    SAT_PART_DETAILS {
+        string hk_part_id PK,FK "Ссылка на товар"
+        timestamp load_dts PK "Дата загрузки"
+        string part_name "Название"
+        string part_mfgr "Производитель"
+        string part_brand "Бренд"
+        string part_type "Тип"
+        integer part_size "Размер"
+        string part_container "Контейнер"
+        decimal part_retailprice "Розничная цена"
+        string part_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.part"
+    }
+
+    SAT_SUPPLIER_DETAILS {
+        string hk_supplier_id PK,FK "Ссылка на поставщика"
+        timestamp load_dts PK "Дата загрузки"
+        string supplier_name "Имя поставщика"
+        string supplier_address "Адрес"
+        string supplier_phone "Телефон"
+        decimal supplier_acctbal "Баланс"
+        string supplier_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.supplier"
+    }
+
+    SAT_PARTSUPP_DETAILS {
+        string hk_partsupp_link_id PK,FK "Ссылка на поставку"
+        timestamp load_dts PK "Дата загрузки"
+        integer partsupp_availqty "Доступное количество"
+        decimal partsupp_supplycost "Стоимость поставки"
+        string partsupp_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.partsupp"
+    }
+
+    SAT_NATION_DETAILS {
+        string hk_nation_id PK,FK "Ссылка на страну"
+        timestamp load_dts PK "Дата загрузки"
+        string nation_name "Название страны"
+        string nation_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.nation"
+    }
+
+    SAT_REGION_DETAILS {
+        string hk_region_id PK,FK "Ссылка на регион"
+        timestamp load_dts PK "Дата загрузки"
+        string region_name "Название региона"
+        string region_comment "Комментарий"
+        string hash_diff "Хэш для отслеживания изменений"
+        string rec_src "Источник: tpch.tiny.region"
+    }
+
+    %% Связи: Хабы — Сателлиты
+    HUB_CUSTOMER ||--o{ SAT_CUSTOMER_DETAILS : "has"
+    HUB_ORDER ||--o{ SAT_ORDER_DETAILS : "has"
+    HUB_PART ||--o{ SAT_PART_DETAILS : "has"
+    HUB_SUPPLIER ||--o{ SAT_SUPPLIER_DETAILS : "has"
+    HUB_NATION ||--o{ SAT_NATION_DETAILS : "has"
+    HUB_REGION ||--o{ SAT_REGION_DETAILS : "has"
+
+    %% Связи: Хабы — Линки
+    HUB_CUSTOMER ||--o{ LINK_ORDER : "participates_in"
+    HUB_ORDER ||--o{ LINK_ORDER : "participates_in"
+
+    HUB_ORDER ||--o{ LINK_LINEITEM : "contains"
+    HUB_PART ||--o{ LINK_LINEITEM : "included_in"
+    HUB_SUPPLIER ||--o{ LINK_LINEITEM : "supplies"
+
+    HUB_PART ||--o{ LINK_PARTSUPP : "supplied_by"
+    HUB_SUPPLIER ||--o{ LINK_PARTSUPP : "supplies_part"
+
+    HUB_CUSTOMER ||--o{ LINK_CUSTOMER_NATION : "resides_in"
+    HUB_NATION ||--o{ LINK_CUSTOMER_NATION : "has_customer"
+
+    HUB_SUPPLIER ||--o{ LINK_SUPPLIER_NATION : "located_in"
+    HUB_NATION ||--o{ LINK_SUPPLIER_NATION : "has_supplier"
+
+    HUB_NATION ||--o{ LINK_NATION_REGION : "belongs_to"
+    HUB_REGION ||--o{ LINK_NATION_REGION : "includes"
+
+    %% Связи: Линки — Сателлиты
+    LINK_LINEITEM ||--o{ SAT_LINEITEM_DETAILS : "has"
+    LINK_PARTSUPP ||--o{ SAT_PARTSUPP_DETAILS : "has"
