@@ -11,9 +11,6 @@ TPC-H benchmark состоит из 8 взаимосвязанных табли�
 * Nation - информация о странах
 * Region - информация о регионах
 
-### Модель Data Vault
-
-### Описание сущностей Data Vault
 
 ### Просмотр структуры схемы tiny в Trino
 -- Посмотреть список таблиц в схеме tpch.tiny
@@ -27,6 +24,10 @@ DESCRIBE tpch.tiny.orders;
 
 -- Посмотреть структуру таблицы lineitem
 DESCRIBE tpch.tiny.lineitem;
+
+### Модель Data Vault
+
+### Описание сущностей Data Vault
 
 ## Запуск
 1. Запуск Trino в Docker:
