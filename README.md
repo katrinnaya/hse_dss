@@ -95,3 +95,16 @@ SELECT 'sat_order_details', COUNT(*) FROM memory.dds.sat_order_details
 UNION ALL
 SELECT 'sat_lineitem_details', COUNT(*) FROM memory.dds.sat_lineitem_details;
 ```
+sat_order_details
+
+15000 + 2 инкремента
+
+sat_lineitem_details
+
+60175 + 10 инкрементов
+
+5. Удаление контейнера и образа
+docker stop trino
+docker rm trino
+docker rmi trinodb/trino
+  
