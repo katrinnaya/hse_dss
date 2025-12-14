@@ -62,21 +62,36 @@ SELECT COUNT(*) FROM memory.dds.sat_order_details WHERE order_date = DATE '1996-
 ```
 4. Проверка результатов
 ```sql
--- Проверка количества записей в хабах
-SELECT 'hub_customer' AS table_name, COUNT(*) AS count FROM dds.hub_customer
-UNION ALL
-SELECT 'hub_order', COUNT(*) FROM dds.hub_order
-UNION ALL
-SELECT 'hub_part', COUNT(*) FROM dds.hub_part
-UNION ALL
-SELECT 'hub_supplier', COUNT(*) FROM dds.hub_supplier
-UNION ALL
-SELECT 'hub_nation', COUNT(*) FROM dds.hub_nation
-UNION ALL
-SELECT 'hub_region', COUNT(*) FROM dds.hub_region;
+-- =============================================
+-- ФИНАЛЬНАЯ ПРОВЕРКА: количество записей в DDS
+-- =============================================
 
--- Проверка связей
-SELECT COUNT(*) AS link_count FROM dds.link_order;
-SELECT COUNT(*) AS link_count FROM dds.link_lineitem;
-SELECT COUNT(*) AS link_count FROM dds.link_partsupp;
+-- Проверка количества записей в хабах
+SELECT 'hub_customer' AS table_name, COUNT(*) AS count FROM memory.dds.hub_customer
+UNION ALL
+SELECT 'hub_order', COUNT(*) FROM memory.dds.hub_order
+UNION ALL
+SELECT 'hub_part', COUNT(*) FROM memory.dds.hub_part
+UNION ALL
+SELECT 'hub_supplier', COUNT(*) FROM memory.dds.hub_supplier
+UNION ALL
+SELECT 'hub_nation', COUNT(*) FROM memory.dds.hub_nation
+UNION ALL
+SELECT 'hub_region', COUNT(*) FROM memory.dds.hub_region
+
+UNION ALL
+
+-- Проверка количества записей в линках
+SELECT 'link_order', COUNT(*) FROM memory.dds.link_order
+UNION ALL
+SELECT 'link_lineitem', COUNT(*) FROM memory.dds.link_lineitem
+UNION ALL
+SELECT 'link_partsupp', COUNT(*) FROM memory.dds.link_partsupp
+
+UNION ALL
+
+-- Проверка количества записей в ключевых сателлитах
+SELECT 'sat_order_details', COUNT(*) FROM memory.dds.sat_order_details
+UNION ALL
+SELECT 'sat_lineitem_details', COUNT(*) FROM memory.dds.sat_lineitem_details;
 ```
