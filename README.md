@@ -33,12 +33,23 @@ SHOW TABLES FROM tpch.tiny;
 
 3. Выполнение скриптов:
 * Создание схемы и таблицы (часть 2)
+
 Проверка создания
 ```sql
 SHOW TABLES FROM memory.dds;
 ```
 
 * Загрузка данных (часть 3)
+
+Проверка на примере хабов
+```sql
+SELECT COUNT(*) AS cnt FROM memory.dds.hub_customer;     
+SELECT COUNT(*) AS cnt FROM memory.dds.hub_order;        
+SELECT COUNT(*) AS cnt FROM memory.dds.hub_part;         
+SELECT COUNT(*) AS cnt FROM memory.dds.hub_supplier;    
+SELECT COUNT(*) AS cnt FROM memory.dds.hub_nation;       
+SELECT COUNT(*) AS cnt FROM memory.dds.hub_region;
+```
 * Инкрементальная загрузка (часть 4)
 4. Проверка результатов
 ```sql
