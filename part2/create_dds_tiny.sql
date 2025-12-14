@@ -1,254 +1,347 @@
--- Создание схемы dds
-CREATE SCHEMA IF NOT EXISTS dds;
+-- Удаляем СПУТНИКИ (satellites)
+DROP TABLE IF EXISTS memory.dds.sat_lineitem_details;
+DROP TABLE IF EXISTS memory.dds.sat_order_details;
+DROP TABLE IF EXISTS memory.dds.sat_customer_details;
+DROP TABLE IF EXISTS memory.dds.sat_part_details;
+DROP TABLE IF EXISTS memory.dds.sat_supplier_details;
+DROP TABLE IF EXISTS memory.dds.sat_partsupp_details;
+DROP TABLE IF EXISTS memory.dds.sat_nation_details;
+DROP TABLE IF EXISTS memory.dds.sat_region_details;
+
+-- Удаляем ЛИНКИ (links)
+DROP TABLE IF EXISTS memory.dds.link_lineitem;
+DROP TABLE IF EXISTS memory.dds.link_order;
+DROP TABLE IF EXISTS memory.dds.link_partsupp;
+DROP TABLE IF EXISTS memory.dds.link_customer_nation;
+DROP TABLE IF EXISTS memory.dds.link_supplier_nation;
+DROP TABLE IF EXISTS memory.dds.link_nation_region;
+
+-- Удаляем ХАБЫ (hubs)
+DROP TABLE IF EXISTS memory.dds.hub_customer;
+DROP TABLE IF EXISTS memory.dds.hub_order;
+DROP TABLE IF EXISTS memory.dds.hub_part;
+DROP TABLE IF EXISTS memory.dds.hub_supplier;
+DROP TABLE IF EXISTS memory.dds.hub_nation;
+DROP TABLE IF EXISTS memory.dds.hub_region;
+
+-- Создание схемы dds в каталоге memory
+CREATE SCHEMA IF NOT EXISTS memory.dds;
 
 -- ===== ХАБЫ (HUBS) =====
 
--- HUB_CUSTOMER
-CREATE TABLE IF NOT EXISTS dds.hub_customer (
-    hk_customer_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ клиента',
-    customer_bk VARCHAR(50) NOT NULL COMMENT 'Бизнес-ключ клиента (C_CUSTKEY)',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_customer_id)
+CREATE TABLE IF NOT exists memory.dds.hub_customer (
+    hk_customer_id VARCHAR(32),
+    customer_bk VARCHAR(50),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- HUB_ORDER
-CREATE TABLE IF NOT EXISTS dds.hub_order (
-    hk_order_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ заказа',
-    order_bk VARCHAR(50) NOT NULL COMMENT 'Бизнес-ключ заказа (O_ORDERKEY)',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_order_id)
+COMMENT ON TABLE memory.dds.hub_customer IS 'Хаб клиентов';
+COMMENT ON COLUMN memory.dds.hub_customer.hk_customer_id IS 'Хэш-ключ клиента (MD5 от C_CUSTKEY)';
+COMMENT ON COLUMN memory.dds.hub_customer.customer_bk IS 'Бизнес-ключ: C_CUSTKEY';
+COMMENT ON COLUMN memory.dds.hub_customer.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.hub_customer.rec_src IS 'Источник данных: tpch.tiny.customer';
+
+CREATE TABLE IF NOT exists memory.dds.hub_order (
+    hk_order_id VARCHAR(32),
+    order_bk VARCHAR(50),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- HUB_PART
-CREATE TABLE IF NOT EXISTS dds.hub_part (
-    hk_part_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ товара',
-    part_bk VARCHAR(50) NOT NULL COMMENT 'Бизнес-ключ товара (P_PARTKEY)',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_part_id)
+COMMENT ON TABLE memory.dds.hub_order IS 'Хаб заказов';
+COMMENT ON COLUMN memory.dds.hub_order.hk_order_id IS 'Хэш-ключ заказа (MD5 от O_ORDERKEY)';
+COMMENT ON COLUMN memory.dds.hub_order.order_bk IS 'Бизнес-ключ: O_ORDERKEY';
+COMMENT ON COLUMN memory.dds.hub_order.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.hub_order.rec_src IS 'Источник данных: tpch.tiny.orders';
+
+CREATE TABLE IF NOT exists memory.dds.hub_part (
+    hk_part_id VARCHAR(32),
+    part_bk VARCHAR(50),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- HUB_SUPPLIER
-CREATE TABLE IF NOT EXISTS dds.hub_supplier (
-    hk_supplier_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ поставщика',
-    supplier_bk VARCHAR(50) NOT NULL COMMENT 'Бизнес-ключ поставщика (S_SUPPKEY)',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_supplier_id)
+COMMENT ON TABLE memory.dds.hub_part IS 'Хаб товаров (деталей)';
+COMMENT ON COLUMN memory.dds.hub_part.hk_part_id IS 'Хэш-ключ товара (MD5 от P_PARTKEY)';
+COMMENT ON COLUMN memory.dds.hub_part.part_bk IS 'Бизнес-ключ: P_PARTKEY';
+COMMENT ON COLUMN memory.dds.hub_part.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.hub_part.rec_src IS 'Источник данных: tpch.tiny.part';
+
+CREATE TABLE IF NOT exists memory.dds.hub_supplier (
+    hk_supplier_id VARCHAR(32),
+    supplier_bk VARCHAR(50),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- HUB_NATION
-CREATE TABLE IF NOT EXISTS dds.hub_nation (
-    hk_nation_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ страны',
-    nation_bk VARCHAR(50) NOT NULL COMMENT 'Бизнес-ключ страны (N_NATIONKEY)',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_nation_id)
+COMMENT ON TABLE memory.dds.hub_supplier IS 'Хаб поставщиков';
+COMMENT ON COLUMN memory.dds.hub_supplier.hk_supplier_id IS 'Хэш-ключ поставщика (MD5 от S_SUPPKEY)';
+COMMENT ON COLUMN memory.dds.hub_supplier.supplier_bk IS 'Бизнес-ключ: S_SUPPKEY';
+COMMENT ON COLUMN memory.dds.hub_supplier.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.hub_supplier.rec_src IS 'Источник данных: tpch.tiny.supplier';
+
+CREATE TABLE IF NOT exists memory.dds.hub_nation (
+    hk_nation_id VARCHAR(32),
+    nation_bk VARCHAR(50),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- HUB_REGION
-CREATE TABLE IF NOT EXISTS dds.hub_region (
-    hk_region_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ региона',
-    region_bk VARCHAR(50) NOT NULL COMMENT 'Бизнес-ключ региона (R_REGIONKEY)',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_region_id)
+COMMENT ON TABLE memory.dds.hub_nation IS 'Хаб стран';
+COMMENT ON COLUMN memory.dds.hub_nation.hk_nation_id IS 'Хэш-ключ страны (MD5 от N_NATIONKEY)';
+COMMENT ON COLUMN memory.dds.hub_nation.nation_bk IS 'Бизнес-ключ: N_NATIONKEY';
+COMMENT ON COLUMN memory.dds.hub_nation.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.hub_nation.rec_src IS 'Источник данных: tpch.tiny.nation';
+
+CREATE TABLE IF NOT exists memory.dds.hub_region (
+    hk_region_id VARCHAR(32),
+    region_bk VARCHAR(50),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
+
+COMMENT ON TABLE memory.dds.hub_region IS 'Хаб регионов';
+COMMENT ON COLUMN memory.dds.hub_region.hk_region_id IS 'Хэш-ключ региона (MD5 от R_REGIONKEY)';
+COMMENT ON COLUMN memory.dds.hub_region.region_bk IS 'Бизнес-ключ: R_REGIONKEY';
+COMMENT ON COLUMN memory.dds.hub_region.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.hub_region.rec_src IS 'Источник данных: tpch.tiny.region';
 
 -- ===== ЛИНКИ (LINKS) =====
 
--- LINK_ORDER (связь заказа с клиентом)
-CREATE TABLE IF NOT EXISTS dds.link_order (
-    hk_order_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи заказ-клиент',
-    hk_order_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ заказа',
-    hk_customer_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ клиента',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_order_link_id),
-    FOREIGN KEY (hk_order_id) REFERENCES dds.hub_order(hk_order_id),
-    FOREIGN KEY (hk_customer_id) REFERENCES dds.hub_customer(hk_customer_id)
+CREATE TABLE IF NOT exists memory.dds.link_order (
+    hk_order_link_id VARCHAR(32),
+    hk_order_id VARCHAR(32),
+    hk_customer_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- LINK_LINEITEM (связь строки заказа с товаром и поставщиком)
-CREATE TABLE IF NOT EXISTS dds.link_lineitem (
-    hk_lineitem_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи строки заказа',
-    hk_order_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ заказа',
-    hk_part_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ товара',
-    hk_supplier_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ поставщика',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    line_number INTEGER NOT NULL COMMENT 'Номер строки в заказе',
-    PRIMARY KEY (hk_lineitem_link_id),
-    FOREIGN KEY (hk_order_id) REFERENCES dds.hub_order(hk_order_id),
-    FOREIGN KEY (hk_part_id) REFERENCES dds.hub_part(hk_part_id),
-    FOREIGN KEY (hk_supplier_id) REFERENCES dds.hub_supplier(hk_supplier_id)
+COMMENT ON TABLE memory.dds.link_order IS 'Линк: связь заказа с клиентом';
+COMMENT ON COLUMN memory.dds.link_order.hk_order_link_id IS 'Хэш-ключ связи заказ–клиент';
+COMMENT ON COLUMN memory.dds.link_order.hk_order_id IS 'Ссылка на хаб заказа';
+COMMENT ON COLUMN memory.dds.link_order.hk_customer_id IS 'Ссылка на хаб клиента';
+COMMENT ON COLUMN memory.dds.link_order.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.link_order.rec_src IS 'Источник данных: tpch.tiny.orders';
+
+CREATE TABLE IF NOT exists memory.dds.link_lineitem (
+    hk_lineitem_link_id VARCHAR(32),
+    hk_order_id VARCHAR(32),
+    hk_part_id VARCHAR(32),
+    hk_supplier_id VARCHAR(32),
+    line_number INTEGER,
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- LINK_PARTSUPP (связь товара с поставщиком)
-CREATE TABLE IF NOT EXISTS dds.link_partsupp (
-    hk_partsupp_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи товар-поставщик',
-    hk_part_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ товара',
-    hk_supplier_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ поставщика',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_partsupp_link_id),
-    FOREIGN KEY (hk_part_id) REFERENCES dds.hub_part(hk_part_id),
-    FOREIGN KEY (hk_supplier_id) REFERENCES dds.hub_supplier(hk_supplier_id)
+COMMENT ON TABLE memory.dds.link_lineitem IS 'Линк: строка заказа (связывает заказ, товар и поставщика)';
+COMMENT ON COLUMN memory.dds.link_lineitem.hk_lineitem_link_id IS 'Хэш-ключ строки заказа';
+COMMENT ON COLUMN memory.dds.link_lineitem.hk_order_id IS 'Ссылка на хаб заказа';
+COMMENT ON COLUMN memory.dds.link_lineitem.hk_part_id IS 'Ссылка на хаб товара';
+COMMENT ON COLUMN memory.dds.link_lineitem.hk_supplier_id IS 'Ссылка на хаб поставщика';
+COMMENT ON COLUMN memory.dds.link_lineitem.line_number IS 'Номер строки в заказе (L_LINENUMBER)';
+COMMENT ON COLUMN memory.dds.link_lineitem.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.link_lineitem.rec_src IS 'Источник данных: tpch.tiny.lineitem';
+
+CREATE TABLE IF NOT exists memory.dds.link_partsupp (
+    hk_partsupp_link_id VARCHAR(32),
+    hk_part_id VARCHAR(32),
+    hk_supplier_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- LINK_CUSTOMER_NATION (связь клиента со страной)
-CREATE TABLE IF NOT EXISTS dds.link_customer_nation (
-    hk_customer_nation_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи клиент-страна',
-    hk_customer_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ клиента',
-    hk_nation_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ страны',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_customer_nation_link_id),
-    FOREIGN KEY (hk_customer_id) REFERENCES dds.hub_customer(hk_customer_id),
-    FOREIGN KEY (hk_nation_id) REFERENCES dds.hub_nation(hk_nation_id)
+COMMENT ON TABLE memory.dds.link_partsupp IS 'Линк: поставка товара от поставщика';
+COMMENT ON COLUMN memory.dds.link_partsupp.hk_partsupp_link_id IS 'Хэш-ключ поставки';
+COMMENT ON COLUMN memory.dds.link_partsupp.hk_part_id IS 'Ссылка на хаб товара';
+COMMENT ON COLUMN memory.dds.link_partsupp.hk_supplier_id IS 'Ссылка на хаб поставщика';
+COMMENT ON COLUMN memory.dds.link_partsupp.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.link_partsupp.rec_src IS 'Источник данных: tpch.tiny.partsupp';
+
+CREATE TABLE IF NOT exists memory.dds.link_customer_nation (
+    hk_customer_nation_link_id VARCHAR(32),
+    hk_customer_id VARCHAR(32),
+    hk_nation_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- LINK_SUPPLIER_NATION (связь поставщика со страной)
-CREATE TABLE IF NOT EXISTS dds.link_supplier_nation (
-    hk_supplier_nation_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи поставщик-страна',
-    hk_supplier_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ поставщика',
-    hk_nation_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ страны',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_supplier_nation_link_id),
-    FOREIGN KEY (hk_supplier_id) REFERENCES dds.hub_supplier(hk_supplier_id),
-    FOREIGN KEY (hk_nation_id) REFERENCES dds.hub_nation(hk_nation_id)
+COMMENT ON TABLE memory.dds.link_customer_nation IS 'Линк: принадлежность клиента к стране';
+COMMENT ON COLUMN memory.dds.link_customer_nation.hk_customer_nation_link_id IS 'Хэш-ключ связи клиент–страна';
+COMMENT ON COLUMN memory.dds.link_customer_nation.hk_customer_id IS 'Ссылка на хаб клиента';
+COMMENT ON COLUMN memory.dds.link_customer_nation.hk_nation_id IS 'Ссылка на хаб страны';
+COMMENT ON COLUMN memory.dds.link_customer_nation.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.link_customer_nation.rec_src IS 'Источник данных: tpch.tiny.customer';
+
+CREATE TABLE IF NOT exists memory.dds.link_supplier_nation (
+    hk_supplier_nation_link_id VARCHAR(32),
+    hk_supplier_id VARCHAR(32),
+    hk_nation_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
 
--- LINK_NATION_REGION (связь страны с регионом)
-CREATE TABLE IF NOT EXISTS dds.link_nation_region (
-    hk_nation_region_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи страна-регион',
-    hk_nation_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ страны',
-    hk_region_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ региона',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    PRIMARY KEY (hk_nation_region_link_id),
-    FOREIGN KEY (hk_nation_id) REFERENCES dds.hub_nation(hk_nation_id),
-    FOREIGN KEY (hk_region_id) REFERENCES dds.hub_region(hk_region_id)
+COMMENT ON TABLE memory.dds.link_supplier_nation IS 'Линк: принадлежность поставщика к стране';
+COMMENT ON COLUMN memory.dds.link_supplier_nation.hk_supplier_nation_link_id IS 'Хэш-ключ связи поставщик–страна';
+COMMENT ON COLUMN memory.dds.link_supplier_nation.hk_supplier_id IS 'Ссылка на хаб поставщика';
+COMMENT ON COLUMN memory.dds.link_supplier_nation.hk_nation_id IS 'Ссылка на хаб страны';
+COMMENT ON COLUMN memory.dds.link_supplier_nation.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.link_supplier_nation.rec_src IS 'Источник данных: tpch.tiny.supplier';
+
+CREATE TABLE IF NOT exists memory.dds.link_nation_region (
+    hk_nation_region_link_id VARCHAR(32),
+    hk_nation_id VARCHAR(32),
+    hk_region_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    rec_src VARCHAR(50)
 );
+
+COMMENT ON TABLE memory.dds.link_nation_region IS 'Линк: принадлежность страны к региону';
+COMMENT ON COLUMN memory.dds.link_nation_region.hk_nation_region_link_id IS 'Хэш-ключ связи страна–регион';
+COMMENT ON COLUMN memory.dds.link_nation_region.hk_nation_id IS 'Ссылка на хаб страны';
+COMMENT ON COLUMN memory.dds.link_nation_region.hk_region_id IS 'Ссылка на хаб региона';
+COMMENT ON COLUMN memory.dds.link_nation_region.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.link_nation_region.rec_src IS 'Источник данных: tpch.tiny.nation';
 
 -- ===== СПУТНИКИ (SATELLITES) =====
 
--- SAT_CUSTOMER_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_customer_details (
-    hk_customer_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ клиента',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    customer_name VARCHAR(255) COMMENT 'Имя клиента',
-    customer_address VARCHAR(255) COMMENT 'Адрес клиента',
-    customer_phone VARCHAR(15) COMMENT 'Телефон клиента',
-    customer_acctbal DECIMAL(15,2) COMMENT 'Баланс счета клиента',
-    customer_mktsegment VARCHAR(10) COMMENT 'Сегмент рынка клиента',
-    customer_comment VARCHAR(117) COMMENT 'Комментарий о клиенте',
-    PRIMARY KEY (hk_customer_id, load_dts),
-    FOREIGN KEY (hk_customer_id) REFERENCES dds.hub_customer(hk_customer_id)
+CREATE TABLE IF NOT exists memory.dds.sat_customer_details (
+    hk_customer_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    customer_name VARCHAR(255),
+    customer_address VARCHAR(255),
+    customer_phone VARCHAR(15),
+    customer_acctbal DECIMAL(15,2),
+    customer_mktsegment VARCHAR(10),
+    customer_comment VARCHAR(117),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_ORDER_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_order_details (
-    hk_order_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ заказа',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    order_status CHAR(1) COMMENT 'Статус заказа',
-    order_totalprice DECIMAL(15,2) COMMENT 'Общая стоимость заказа',
-    order_date DATE COMMENT 'Дата заказа',
-    order_priority VARCHAR(15) COMMENT 'Приоритет заказа',
-    order_clerk VARCHAR(15) COMMENT 'Клерк, обработавший заказ',
-    order_shippriority INTEGER COMMENT 'Приоритет доставки',
-    order_comment VARCHAR(79) COMMENT 'Комментарий к заказу',
-    PRIMARY KEY (hk_order_id, load_dts),
-    FOREIGN KEY (hk_order_id) REFERENCES dds.hub_order(hk_order_id)
+COMMENT ON TABLE memory.dds.sat_customer_details IS 'Спутник: описательные атрибуты клиента';
+COMMENT ON COLUMN memory.dds.sat_customer_details.hk_customer_id IS 'Ссылка на хаб клиента';
+COMMENT ON COLUMN memory.dds.sat_customer_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_customer_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_order_details (
+    hk_order_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    order_status VARCHAR(1),
+    order_totalprice DECIMAL(15,2),
+    order_date DATE,
+    order_priority VARCHAR(15),
+    order_clerk VARCHAR(15),
+    order_shippriority INTEGER,
+    order_comment VARCHAR(79),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_LINEITEM_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_lineitem_details (
-    hk_lineitem_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи строки заказа',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    lineitem_quantity DECIMAL(15,2) COMMENT 'Количество',
-    lineitem_extendedprice DECIMAL(15,2) COMMENT 'Расширенная цена',
-    lineitem_discount DECIMAL(15,2) COMMENT 'Скидка',
-    lineitem_tax DECIMAL(15,2) COMMENT 'Налог',
-    lineitem_returnflag CHAR(1) COMMENT 'Флаг возврата',
-    lineitem_linestatus CHAR(1) COMMENT 'Статус строки',
-    lineitem_shipdate DATE COMMENT 'Дата отгрузки',
-    lineitem_commitdate DATE COMMENT 'Дата подтверждения',
-    lineitem_receiptdate DATE COMMENT 'Дата получения',
-    lineitem_shipinstruct VARCHAR(25) COMMENT 'Инструкции по отгрузке',
-    lineitem_shipmode VARCHAR(10) COMMENT 'Способ отгрузки',
-    lineitem_comment VARCHAR(44) COMMENT 'Комментарий к строке заказа',
-    PRIMARY KEY (hk_lineitem_link_id, load_dts),
-    FOREIGN KEY (hk_lineitem_link_id) REFERENCES dds.link_lineitem(hk_lineitem_link_id)
+COMMENT ON TABLE memory.dds.sat_order_details IS 'Спутник: описательные атрибуты заказа';
+COMMENT ON COLUMN memory.dds.sat_order_details.hk_order_id IS 'Ссылка на хаб заказа';
+COMMENT ON COLUMN memory.dds.sat_order_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_order_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_lineitem_details (
+    hk_lineitem_link_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    lineitem_quantity DECIMAL(15,2),
+    lineitem_extendedprice DECIMAL(15,2),
+    lineitem_discount DECIMAL(15,2),
+    lineitem_tax DECIMAL(15,2),
+    lineitem_returnflag VARCHAR(1),
+    lineitem_linestatus VARCHAR(1),
+    lineitem_shipdate DATE,
+    lineitem_commitdate DATE,
+    lineitem_receiptdate DATE,
+    lineitem_shipinstruct VARCHAR(25),
+    lineitem_shipmode VARCHAR(10),
+    lineitem_comment VARCHAR(44),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_PART_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_part_details (
-    hk_part_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ товара',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    part_name VARCHAR(55) COMMENT 'Название товара',
-    part_mfgr VARCHAR(25) COMMENT 'Производитель',
-    part_brand VARCHAR(10) COMMENT 'Бренд',
-    part_type VARCHAR(25) COMMENT 'Тип товара',
-    part_size INTEGER COMMENT 'Размер',
-    part_container VARCHAR(10) COMMENT 'Контейнер',
-    part_retailprice DECIMAL(15,2) COMMENT 'Розничная цена',
-    part_comment VARCHAR(23) COMMENT 'Комментарий о товаре',
-    PRIMARY KEY (hk_part_id, load_dts),
-    FOREIGN KEY (hk_part_id) REFERENCES dds.hub_part(hk_part_id)
+COMMENT ON TABLE memory.dds.sat_lineitem_details IS 'Спутник: метрики и статусы строки заказа';
+COMMENT ON COLUMN memory.dds.sat_lineitem_details.hk_lineitem_link_id IS 'Ссылка на линк строки заказа';
+COMMENT ON COLUMN memory.dds.sat_lineitem_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_lineitem_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_part_details (
+    hk_part_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    part_name VARCHAR(55),
+    part_mfgr VARCHAR(25),
+    part_brand VARCHAR(10),
+    part_type VARCHAR(25),
+    part_size INTEGER,
+    part_container VARCHAR(10),
+    part_retailprice DECIMAL(15,2),
+    part_comment VARCHAR(23),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_SUPPLIER_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_supplier_details (
-    hk_supplier_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ поставщика',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    supplier_name VARCHAR(25) COMMENT 'Имя поставщика',
-    supplier_address VARCHAR(40) COMMENT 'Адрес поставщика',
-    supplier_phone VARCHAR(15) COMMENT 'Телефон поставщика',
-    supplier_acctbal DECIMAL(15,2) COMMENT 'Баланс счета поставщика',
-    supplier_comment VARCHAR(101) COMMENT 'Комментарий о поставщике',
-    PRIMARY KEY (hk_supplier_id, load_dts),
-    FOREIGN KEY (hk_supplier_id) REFERENCES dds.hub_supplier(hk_supplier_id)
+COMMENT ON TABLE memory.dds.sat_part_details IS 'Спутник: описательные атрибуты товара';
+COMMENT ON COLUMN memory.dds.sat_part_details.hk_part_id IS 'Ссылка на хаб товара';
+COMMENT ON COLUMN memory.dds.sat_part_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_part_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_supplier_details (
+    hk_supplier_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    supplier_name VARCHAR(25),
+    supplier_address VARCHAR(40),
+    supplier_phone VARCHAR(15),
+    supplier_acctbal DECIMAL(15,2),
+    supplier_comment VARCHAR(101),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_PARTSUPP_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_partsupp_details (
-    hk_partsupp_link_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ связи товар-поставщик',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    partsupp_availqty INTEGER COMMENT 'Доступное количество',
-    partsupp_supplycost DECIMAL(15,2) COMMENT 'Стоимость поставки',
-    partsupp_comment VARCHAR(199) COMMENT 'Комментарий о поставке',
-    PRIMARY KEY (hk_partsupp_link_id, load_dts),
-    FOREIGN KEY (hk_partsupp_link_id) REFERENCES dds.link_partsupp(hk_partsupp_link_id)
+COMMENT ON TABLE memory.dds.sat_supplier_details IS 'Спутник: описательные атрибуты поставщика';
+COMMENT ON COLUMN memory.dds.sat_supplier_details.hk_supplier_id IS 'Ссылка на хаб поставщика';
+COMMENT ON COLUMN memory.dds.sat_supplier_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_supplier_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_partsupp_details (
+    hk_partsupp_link_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    partsupp_availqty INTEGER,
+    partsupp_supplycost DECIMAL(15,2),
+    partsupp_comment VARCHAR(199),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_NATION_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_nation_details (
-    hk_nation_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ страны',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    nation_name VARCHAR(25) COMMENT 'Название страны',
-    nation_comment VARCHAR(152) COMMENT 'Комментарий о стране',
-    PRIMARY KEY (hk_nation_id, load_dts),
-    FOREIGN KEY (hk_nation_id) REFERENCES dds.hub_nation(hk_nation_id)
+COMMENT ON TABLE memory.dds.sat_partsupp_details IS 'Спутник: атрибуты поставки товара от поставщика';
+COMMENT ON COLUMN memory.dds.sat_partsupp_details.hk_partsupp_link_id IS 'Ссылка на линк поставки';
+COMMENT ON COLUMN memory.dds.sat_partsupp_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_partsupp_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_nation_details (
+    hk_nation_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    nation_name VARCHAR(25),
+    nation_comment VARCHAR(152),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
 
--- SAT_REGION_DETAILS
-CREATE TABLE IF NOT EXISTS dds.sat_region_details (
-    hk_region_id VARCHAR(32) NOT NULL COMMENT 'Хеш-ключ региона',
-    load_dts TIMESTAMP NOT NULL COMMENT 'Дата загрузки',
-    rec_src VARCHAR(50) NOT NULL COMMENT 'Источник записи',
-    region_name VARCHAR(25) COMMENT 'Название региона',
-    region_comment VARCHAR(152) COMMENT 'Комментарий о регионе',
-    PRIMARY KEY (hk_region_id, load_dts),
-    FOREIGN KEY (hk_region_id) REFERENCES dds.hub_region(hk_region_id)
+COMMENT ON TABLE memory.dds.sat_nation_details IS 'Спутник: описательные атрибуты страны';
+COMMENT ON COLUMN memory.dds.sat_nation_details.hk_nation_id IS 'Ссылка на хаб страны';
+COMMENT ON COLUMN memory.dds.sat_nation_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_nation_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
+
+CREATE TABLE IF NOT exists memory.dds.sat_region_details (
+    hk_region_id VARCHAR(32),
+    load_dts TIMESTAMP,
+    region_name VARCHAR(25),
+    region_comment VARCHAR(152),
+    hash_diff VARCHAR(32),
+    rec_src VARCHAR(50)
 );
+
+COMMENT ON TABLE memory.dds.sat_region_details IS 'Спутник: описательные атрибуты региона';
+COMMENT ON COLUMN memory.dds.sat_region_details.hk_region_id IS 'Ссылка на хаб региона';
+COMMENT ON COLUMN memory.dds.sat_region_details.load_dts IS 'Дата загрузки записи';
+COMMENT ON COLUMN memory.dds.sat_region_details.hash_diff IS 'Хэш от всех атрибутов для отслеживания изменений';
