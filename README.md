@@ -38,6 +38,7 @@ SHOW TABLES FROM tpch.tiny;
 ```sql
 SHOW TABLES FROM memory.dds;
 ```
+![table](part1/tiny_diagram_dv.mermaid) 
 
 * Загрузка данных (часть 3)
 
