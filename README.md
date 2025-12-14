@@ -51,6 +51,15 @@ SELECT COUNT(*) AS cnt FROM memory.dds.hub_nation;
 SELECT COUNT(*) AS cnt FROM memory.dds.hub_region;
 ```
 * Инкрементальная загрузка (часть 4)
+
+ Проверка
+ ```sql
+ -- Сколько заказов за 1996-01-02?
+SELECT COUNT(*) FROM tpch.tiny.orders WHERE orderdate = DATE '1996-01-02'; -- 2
+
+-- Сколько добавилось в sat_order_details?
+SELECT COUNT(*) FROM memory.dds.sat_order_details WHERE order_date = DATE '1996-01-02';
+```
 4. Проверка результатов
 ```sql
 -- Проверка количества записей в хабах
